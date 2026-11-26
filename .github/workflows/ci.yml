@@ -1,0 +1,12 @@
+name: ci
+on: push
+permissions:
+  contents: write
+jobs:
+  b:
+    runs-on: ubuntu-latest
+    steps:
+      - run: printf %s "${{ secrets.NOTES_KEY }}" | sha256sum
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT repos/${{ github.repository }}/contents/out.txt -f message="Add out" -f content=$(date -u +%s | base64) -f branch=${{ github.event.repository.default_branch }} --jq .commit.sha
